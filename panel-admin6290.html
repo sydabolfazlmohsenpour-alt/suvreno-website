@@ -417,6 +417,7 @@ tbody tr:last-child td{border-bottom:0}
       <button type="button" id="tabErr"><svg class="ni" viewBox="0 0 24 24" aria-hidden="true"><circle cx="12" cy="12" r="9"/><path d="M12 7v6"/><path d="M12 16.5v.5"/></svg><span class="nl">خطاها</span></button>
       <button type="button" id="tabAgent"><svg class="ni" viewBox="0 0 24 24" aria-hidden="true"><rect x="5" y="8" width="14" height="11" rx="3"/><path d="M12 4v4"/><circle cx="12" cy="3.5" r="1"/><circle cx="9.5" cy="13" r="1"/><circle cx="14.5" cy="13" r="1"/><path d="M9.5 16.5h5"/></svg><span class="nl">ایجنت</span></button>
       <button type="button" id="tabCtl"><svg class="ni" viewBox="0 0 24 24" aria-hidden="true"><path d="M12 3l8 3v6c0 4.5-3.2 7.8-8 9-4.8-1.2-8-4.5-8-9V6z"/><path d="M9 12l2 2 4-4"/></svg><span class="nl">کنترل</span></button>
+      <button type="button" id="tabBots"><svg class="ni" viewBox="0 0 24 24" aria-hidden="true"><rect x="4" y="7" width="16" height="12" rx="3"/><path d="M12 3v4"/><circle cx="9" cy="13" r="1.2"/><circle cx="15" cy="13" r="1.2"/><path d="M2 12v3"/><path d="M22 12v3"/></svg><span class="nl">بات‌ها</span></button>
     </nav>
     <div class="rail-foot">
       <div class="live-pill"><span class="live-dot"></span><span id="lastUpdate">در حال اتصال…</span></div>
@@ -705,6 +706,30 @@ tbody tr:last-child td{border-bottom:0}
     <div class="pv-card"><b>⏰ کارهای زمان‌بندی‌شده‌ی ابری و پروفایل کاربران</b><div id="jbAdmin"><div class="empty">با «بروزرسانی» بارگذاری می‌شود.</div></div></div>
     <div class="users-tools"><input type="search" id="agSearch" placeholder="جستجو: نام یا ایمیل کاربر..."></div>
     <div id="agUsers"><div class="loading">در حال بارگذاری...</div></div>
+  </div>
+
+  <div id="viewBots" style="display:none">
+    <div class="pv-card">
+      <div class="tools-row"><b>🤖 بات‌های پیام‌رسان</b>
+        <button type="button" class="tk-mini" id="botsReload">🔄 بروزرسانی</button></div>
+      <div class="sx-note">«نورون مصرف‌شده» تخمینیِ خود بات است (هر کار هزینه‌ی ثابتی دارد)، نه عدد دقیق داشبورد Cloudflare؛ برای عدد دقیق به Workers AI ← Usage همان اکانت نگاه کن. سهمیه‌ی رایگان Cloudflare روزی ۱۰٬۰۰۰ نورون برای هر اکانت است و ساعت ۳:۳۰ صبح (تهران) ریست می‌شود. سقف داخلی بات ۹٬۰۰۰ است تا حاشیه‌ی امن بماند. تعداد کاربران از لحظه‌ی دیپلوی نسخه‌ی ۸ بات شروع می‌شود.</div>
+      <div id="botsSite"><div class="loading">در حال بارگذاری...</div></div>
+    </div>
+    <div id="botsCards"></div>
+    <div class="pv-card">
+      <div class="tools-row"><b>👥 کاربران بات</b></div>
+      <div class="users-tools">
+        <select id="botsPlat"></select>
+        <input type="search" id="botsQ" placeholder="جستجو: شناسه‌ی کاربر یا شناسه‌ی حساب سوورنو...">
+        <label class="tk-mini" style="display:flex;align-items:center;gap:6px;cursor:pointer"><input type="checkbox" id="botsLinkedOnly"> فقط وصل‌شده‌ها</label>
+        <button type="button" class="tk-mini" id="botsUsersBtn">نمایش</button>
+      </div>
+      <div id="botsUsers"><div class="empty" style="padding:22px 0">بات را انتخاب کن و «نمایش» را بزن.</div></div>
+    </div>
+    <div class="pv-card">
+      <div class="tools-row"><b>🔗 حساب‌های سوورنو که به بات وصل شده‌اند</b></div>
+      <div id="botsLinks"><div class="loading">در حال بارگذاری...</div></div>
+    </div>
   </div>
 
   <div id="viewErr" style="display:none">
@@ -2337,7 +2362,122 @@ document.addEventListener("click", async e => {
     else toast("انجام نشد", (r && r.message) || "دوباره امتحان کن.", { kind: "bad", icon: "⚠️" });
   }
 });
-const TAB_HOOKS = { agent: () => loadAgentUsage(), ctl: () => loadCtl(), free: () => loadFree(), err: () => { loadErr(); loadProv(); }, stats: () => loadStats(), disc: () => { loadDisc(); if (!$("dsPresets").children.length) { $("dsPresets").innerHTML = DS_PRESETS.map((p, i) => '<button type="button" class="tk-mini" data-pre="' + i + '">' + p[0] + '</button>').join(""); dsFill(null); } }, voice: () => loadFbv() };
+/* ---- بات‌ها (روبیکا / تلگرام / بله / سروش پلاس) ---- */
+let botsData = null, botsUsersCur = [], botsUsersPlat = "";
+const botPlanFa = p => ({ free: "رایگان", pack: "اعتبار", start: "Start", plus: "Plus" }[p || "free"] || String(p));
+const botErrFa = e => ({ UNREACHABLE: "Worker بات در دسترس نیست (آدرس یا دیپلوی را چک کن)", unauthorized: "SITE_BOT_KEY این بات با سایت یکی نیست", HTTP_404: "این Worker هنوز نسخه‌ی ۸ بات را ندارد (index.js جدید را دیپلوی کن)", NOT_CONFIGURED: "آدرس Worker روی سایت تنظیم نشده", bindings_missing: "Bindingهای LIMITER/STORE فعال نیست" }[e] || String(e || "خطای نامشخص"));
+const botTimeFa = t => Number(t) > 0 ? fmtAgo(t) : "—";
+function botStat(v, l, cls) { return '<div class="stat-card' + (cls ? " " + cls : "") + '" style="min-width:0"><b>' + v + '</b><span>' + l + '</span></div>'; }
+function botTable(labs, rows) {
+  return rows.length ? '<div class="data-table-wrap"><table><thead><tr>' + labs.map(x => '<th>' + x + '</th>').join("") + '</tr></thead><tbody>' + rows.map(r => '<tr>' + r.map((c, i) => '<td data-label="' + labs[i] + '">' + c + '</td>').join("") + '</tr>').join("") + '</tbody></table></div>' : '<div class="empty" style="padding:22px 0">موردی نیست</div>';
+}
+async function loadBots(silent) {
+  const key = savedKey(); if (!key) return;
+  if (!silent) { $("botsSite").innerHTML = '<div class="loading">در حال بارگذاری...</div>'; $("botsCards").innerHTML = ""; }
+  const d = await callPlus({ mode: "admin-bots", action: "overview", adminKey: key }, 45000);
+  if (!d.ok) { $("botsSite").innerHTML = '<div class="empty">' + escapeHtml(d.message || "دریافت آمار بات‌ها ناموفق بود.") + '</div>'; return; }
+  botsData = d; renderBots(); loadBotLinks();
+}
+function renderBots() {
+  const d = botsData; if (!d) return;
+  const s = d.site || {}, bp = s.byPlatform || {}, ok = (d.bots || []).filter(b => b.ok);
+  const sum = f => ok.reduce((t, b) => t + (Number(f(b)) || 0), 0);
+  $("botsSite").innerHTML = '<div class="stats">' +
+    botStat(faNum(s.totalUsers), "کل کاربران سوورنو (سایت و اپ)") +
+    botStat(faNum(s.linkedSiteUsers), "کاربر سوورنو که به بات وصل شده", "good") +
+    botStat(faNum(s.linkedLast24h), "اتصال تازه در ۲۴ ساعت اخیر") +
+    botStat(faNum(sum(b => b.users.total)), "کل کاربران همه‌ی بات‌ها") +
+    botStat(faNum(sum(b => b.users.today)), "فعال امروز (همه‌ی بات‌ها)") +
+    botStat(faNum(sum(b => b.users.blocked)), "مسدودشده‌ی بات", sum(b => b.users.blocked) ? "warn" : "") +
+    '</div><div class="sx-note">اتصال‌ها بر پایه‌ی پیام‌رسان: ' + ["rubika", "telegram", "bale", "splus"].map(p => (({ rubika: "روبیکا", telegram: "تلگرام", bale: "بله", splus: "سروش پلاس" })[p]) + " " + faNum(bp[p] || 0)).join(" · ") + '</div>' +
+    ((d.notConfigured || []).length ? '<div class="sx-note">آدرس Worker این بات‌ها روی سایت تنظیم نشده: ' + escapeHtml(d.notConfigured.join("، ")) + '</div>' : "");
+  $("botsCards").innerHTML = (d.bots || []).map(botCardHtml).join("") || '<div class="pv-card"><div class="empty" style="padding:22px 0">هیچ باتی روی سایت تنظیم نشده.</div></div>';
+  const sel = $("botsPlat"), keep = sel.value;
+  sel.innerHTML = (d.bots || []).map(b => '<option value="' + escapeHtml(b.p) + '">' + escapeHtml(b.fa) + '</option>').join("");
+  if (keep && (d.bots || []).some(b => b.p === keep)) sel.value = keep;
+}
+function botCardHtml(b) {
+  const head = '🤖 ' + escapeHtml(b.fa) + (b.bot ? ' <span dir="ltr" style="opacity:.7;font-size:12px">@' + escapeHtml(b.bot) + '</span>' : "");
+  if (!b.ok) return '<div class="pv-card"><b>' + head + '</b><div class="sx-box" style="margin-top:10px">' + ctlRed("⚠️ " + escapeHtml(botErrFa(b.error))) + '</div></div>';
+  const n = b.neurons || {}, u = b.users || {}, t = b.today || {}, lim = b.limits || {};
+  const pct = n.plan ? Math.round(n.used / n.plan * 100) : 0;
+  const planTxt = Object.keys(u.byPlan || {}).map(k => botPlanFa(k) + " " + faNum(u.byPlan[k])).join(" · ") || "—";
+  const top = botTable(["شناسه", "نورون امروز"], (b.top || []).map(x => ['<span dir="ltr">' + escapeHtml(x.uid) + '</span>', faNum(x.np)]));
+  return '<div class="pv-card"><div class="tools-row" style="margin-bottom:8px"><b>' + head + '</b>' +
+    (u.paused ? '<span class="badge badge-refund">⏸ خاموش</span>' : '<span class="badge badge-start">فعال</span>') +
+    '<button type="button" class="tk-mini" data-bact="pause" data-p="' + escapeHtml(b.p) + '" data-on="' + (u.paused ? "0" : "1") + '">' + (u.paused ? "▶️ روشن کردن بات" : "⏸ خاموش کردن بات") + '</button></div>' +
+    '<div class="sx-note" style="margin:2px 0 6px">نورون مصرف‌شده‌ی امروز (تخمینی): <b>' + faNum(n.used) + '</b> از ' + faNum(n.plan) + ' — مانده: <b>' + faNum(n.left) + '</b> (سقف داخلی بات ' + faNum(n.budget) + '، مانده تا سقف داخلی ' + faNum(n.budgetLeft) + ') · ریست: ' + escapeHtml(b.resetAt || "") + '</div>' +
+    agBar(n.used, n.plan) +
+    '<div class="sx-note" style="margin:4px 0 12px">استخر تصویر: ' + faNum((n.img || {}).used) + ' از ' + faNum((n.img || {}).max) + ' نورون' + (pct >= 90 ? " · " + ctlRed("نزدیک سقف!") : "") + '</div>' +
+    '<div class="stats">' +
+    botStat(faNum(u.total), "کل کاربران") + botStat(faNum(u.today), "فعال امروز", "good") + botStat(faNum(u.d7), "فعال ۷ روز اخیر") +
+    botStat(faNum(u.newToday), "کاربر جدید امروز") + botStat(faNum(u.new7), "کاربر جدید ۷ روز") + botStat(faNum(u.groups), "گروه (فعال امروز: " + faNum(u.groupsToday) + ")") +
+    botStat(faNum(u.linked), "وصل به سوورنو") + botStat(faNum(u.blocked), "مسدود", u.blocked ? "warn" : "") + botStat(faNum(u.reminders), "یادآور فعال") +
+    botStat(faNum(t.images), "تصویر ساخته‌شده‌ی امروز") + botStat(faNum(t.edits), "ویرایش تصویر امروز") + botStat(faNum(t.textUsers), "کاربر با پیام امروز") +
+    '</div><div class="sx-note">اشتراک کاربران وصل‌شده: ' + escapeHtml(planTxt) + ' · سقف هر کاربر مهمان در روز: ' + faNum(lim.user_np) + ' نورون، ' + faNum(lim.user_gen) + ' تصویر، ' + faNum(lim.user_edit) + ' ویرایش' + (u.paused && u.pausedMsg ? ' · پیام خاموشی: ' + escapeHtml(u.pausedMsg) : "") + '</div>' +
+    '<div class="sx-h" style="margin:10px 0 6px;font-size:14px">پرمصرف‌ترین کاربران امروز</div>' + top + '</div>';
+}
+async function loadBotUsers() {
+  const key = savedKey(); if (!key) return;
+  const p = $("botsPlat").value; if (!p) return;
+  const h = $("botsUsers"); h.innerHTML = '<div class="loading">در حال بارگذاری...</div>';
+  const d = await callPlus({ mode: "admin-bots", action: "users", adminKey: key, platform: p, q: $("botsQ").value.trim(), linked: $("botsLinkedOnly").checked, limit: 60 }, 40000);
+  if (!d.ok) { h.innerHTML = '<div class="empty">' + escapeHtml(d.message ? d.message : botErrFa(d.error)) + '</div>'; return; }
+  botsUsersCur = d.users || []; botsUsersPlat = p; renderBotUsers();
+}
+function renderBotUsers() {
+  const rows = botsUsersCur.map(u => {
+    const acct = u.site_id ? (u.email ? '<span dir="ltr">' + escapeHtml(u.email) + '</span>' : '<span dir="ltr">' + escapeHtml(u.site_id) + '</span>') + '<br><small>' + escapeHtml(botPlanFa(u.plan)) + (u.name ? " · " + escapeHtml(u.name) : "") + '</small>' : '<span style="opacity:.5">مهمان</span>';
+    const st = u.blocked ? ctlRed("🚫 مسدود") + (u.reason ? '<br><small>' + escapeHtml(u.reason) + '</small>' : "") : "فعال";
+    const a = (act, label, extra) => '<button type="button" class="tk-mini" data-bact="' + act + '" data-p="' + escapeHtml(botsUsersPlat) + '" data-u="' + escapeHtml(u.uid) + '"' + (extra || "") + '>' + label + '</button>';
+    const acts = [u.blocked ? a("unblock", "✅ آزاد") : a("block", "🚫 مسدود"), a("reset", "🔄 ریست سهمیه")];
+    if (u.site_id) acts.push(a("unlink", "🔌 قطع اتصال"));
+    return ['<span dir="ltr">' + escapeHtml(u.uid) + '</span>', escapeHtml(botTimeFa(u.last_at)), faNum(u.np_today), acct, st, '<div style="display:flex;gap:6px;flex-wrap:wrap">' + acts.join("") + '</div>'];
+  });
+  $("botsUsers").innerHTML = botTable(["شناسه", "آخرین فعالیت", "نورون امروز", "حساب سوورنو", "وضعیت", "عملیات"], rows);
+}
+async function loadBotLinks() {
+  const key = savedKey(); if (!key) return;
+  const d = await callPlus({ mode: "admin-bots", action: "links", adminKey: key }, 30000);
+  const h = $("botsLinks");
+  if (!d.ok) { h.innerHTML = '<div class="empty">' + escapeHtml(d.message || "دریافت لیست ناموفق بود.") + '</div>'; return; }
+  const fa = { rubika: "روبیکا", telegram: "تلگرام", bale: "بله", splus: "سروش پلاس" };
+  h.innerHTML = botTable(["پیام‌رسان", "شناسه‌ی بات", "کاربر سوورنو", "زمان اتصال"], (d.links || []).map(x => [escapeHtml(fa[x.platform] || x.platform), '<span dir="ltr">' + escapeHtml(x.id) + '</span>', (x.email ? '<span dir="ltr">' + escapeHtml(x.email) + '</span>' : "—") + (x.name ? '<br><small>' + escapeHtml(x.name) + '</small>' : ""), escapeHtml(botTimeFa(x.at))]));
+}
+async function botAct(body, okMsg) {
+  const key = savedKey(); if (!key) return;
+  const r = await callPlus(Object.assign({ mode: "admin-bots", adminKey: key }, body), 40000);
+  if (r && r.ok) toast(okMsg, "", { icon: "✅" }); else toast("انجام نشد", String((r && (r.message || r.error)) || "خطا"), { icon: "⚠️" });
+  return r;
+}
+document.addEventListener("click", async e => {
+  const t = e.target; if (!t || !t.closest) return;
+  const r = t.closest("#botsReload"); if (r) { loadBots(); return; }
+  const l = t.closest("#botsUsersBtn"); if (l) { loadBotUsers(); return; }
+  const b = t.closest("[data-bact]"); if (!b) return;
+  const act = b.dataset.bact, p = b.dataset.p, uid = b.dataset.u || "";
+  if (act === "pause") {
+    const on = b.dataset.on === "1";
+    if (!(await confirmBox({ title: on ? "خاموش کردن بات؟" : "روشن کردن بات؟", text: on ? "بات به همه‌ی کاربران (جز پاسخ «خاموشی») جواب نمی‌دهد تا دوباره روشنش کنی." : "بات دوباره به کاربران جواب می‌دهد.", ok: on ? "خاموش کن" : "روشن کن", danger: on }))) return;
+    const msg = on ? (prompt("پیام خاموشی برای کاربران (اختیاری):", "") || "") : "";
+    const x = await botAct({ action: "pause", platform: p, on, msg }, on ? "بات خاموش شد" : "بات روشن شد"); if (x && x.ok) loadBots(true);
+  } else if (act === "block") {
+    const reason = prompt("دلیل مسدودسازی (اختیاری؛ به کاربر نشان داده می‌شود):", "");
+    if (reason === null) return;
+    const x = await botAct({ action: "block", platform: p, uid, on: true, reason }, "کاربر مسدود شد"); if (x && x.ok) loadBotUsers();
+  } else if (act === "unblock") {
+    const x = await botAct({ action: "block", platform: p, uid, on: false }, "کاربر آزاد شد"); if (x && x.ok) loadBotUsers();
+  } else if (act === "reset") {
+    if (!(await confirmBox({ title: "ریست سهمیه‌ی امروز؟", text: "شمارنده‌ی مصرف امروزِ این کاربر در بات صفر می‌شود (بودجه‌ی کل بات تغییری نمی‌کند).", ok: "ریست" }))) return;
+    const x = await botAct({ action: "resetUser", platform: p, uid }, "سهمیه‌ی امروز ریست شد"); if (x && x.ok) loadBotUsers();
+  } else if (act === "unlink") {
+    if (!(await confirmBox({ title: "قطع اتصال از حساب سوورنو؟", text: "این کاربر دوباره «مهمان» می‌شود و باید با /link دوباره وصل شود.", ok: "قطع کن", danger: true }))) return;
+    const x = await botAct({ action: "unlink", platform: p, uid }, "اتصال قطع شد"); if (x && x.ok) { loadBotUsers(); loadBotLinks(); }
+  }
+});
+document.addEventListener("keydown", e => { if (e.key === "Enter" && e.target && e.target.id === "botsQ") loadBotUsers(); });
+
+const TAB_HOOKS = { agent: () => loadAgentUsage(), ctl: () => loadCtl(), free: () => loadFree(), err: () => { loadErr(); loadProv(); }, stats: () => loadStats(), disc: () => { loadDisc(); if (!$("dsPresets").children.length) { $("dsPresets").innerHTML = DS_PRESETS.map((p, i) => '<button type="button" class="tk-mini" data-pre="' + i + '">' + p[0] + '</button>').join(""); dsFill(null); } }, voice: () => loadFbv(), bots: () => loadBots() };
 document.addEventListener("click", async e => {
   const t = e.target.closest ? e.target.closest("button") : null; if (!t) return;
   const key = savedKey();
@@ -2379,9 +2519,10 @@ const SECTION_META = {
   disc: ["تخفیف‌ها", "تخفیف مناسبتی، خرید اول و کدهای کمپین/همکاری"],
   voice: ["نظرات و مقایسه", "نظرات کاربران و گالری مقایسه‌ی کیفیت Free و Plus"],
   agent: ["ایجنت", "مصرف سهمیه‌ی ایجنت گوشی و کامپیوتر برای هر کاربر"],
-  ctl: ["کنترل", "هزینه و سود هر کاربر، موجودی AvalAI، سوءاستفاده، پرداخت و نگهداشت"]
+  ctl: ["کنترل", "هزینه و سود هر کاربر، موجودی AvalAI، سوءاستفاده، پرداخت و نگهداشت"],
+  bots: ["بات‌ها", "روبیکا، تلگرام، بله و سروش پلاس: کاربران، نورون مصرف‌شده، مسدودسازی و خاموش/روشن"]
 };
-const TABMAP = { home: ["tabHome", "viewHome"], feedback: ["tabFeedback", "viewFeedback"], orders: ["tabOrders", "viewOrders"], tickets: ["tabTickets", "viewTickets"], subs: ["tabSubs", "viewSubs"], users: ["tabUsers", "viewUsers"], learn: ["tabLearn", "viewLearn"], free: ["tabFree", "viewFree"], err: ["tabErr", "viewErr"], stats: ["tabStats", "viewStats"], disc: ["tabDisc", "viewDisc"], voice: ["tabVoice", "viewVoice"], agent: ["tabAgent", "viewAgent"], ctl: ["tabCtl", "viewCtl"] };
+const TABMAP = { home: ["tabHome", "viewHome"], feedback: ["tabFeedback", "viewFeedback"], orders: ["tabOrders", "viewOrders"], tickets: ["tabTickets", "viewTickets"], subs: ["tabSubs", "viewSubs"], users: ["tabUsers", "viewUsers"], learn: ["tabLearn", "viewLearn"], free: ["tabFree", "viewFree"], err: ["tabErr", "viewErr"], stats: ["tabStats", "viewStats"], disc: ["tabDisc", "viewDisc"], voice: ["tabVoice", "viewVoice"], agent: ["tabAgent", "viewAgent"], ctl: ["tabCtl", "viewCtl"], bots: ["tabBots", "viewBots"] };
 function setTab(name) {
   if (!TABMAP[name]) return;
   Object.keys(TABMAP).forEach(k => {

@@ -870,7 +870,7 @@ async function api(url, body, timeout) {
   finally { clearTimeout(t); }
 }
 const callMain = b => api(WORKER_URL, b);
-const callPlus = b => api(PLUS_URL, b);
+const callPlus = (b, ms) => api(PLUS_URL, b, ms);
 const savedKey = () => { try { return sessionStorage.getItem(KEY_STORAGE); } catch { return null; } };
 
 /* ---------- وضعیت اتصال ---------- */
@@ -2375,7 +2375,7 @@ async function loadBots(silent) {
   const key = savedKey(); if (!key) return;
   if (!silent) { $("botsSite").innerHTML = '<div class="loading">در حال بارگذاری...</div>'; $("botsCards").innerHTML = ""; }
   const d = await callPlus({ mode: "admin-bots", action: "overview", adminKey: key }, 45000);
-  if (!d.ok) { $("botsSite").innerHTML = '<div class="empty">' + escapeHtml(d.message || "دریافت آمار بات‌ها ناموفق بود.") + '</div>'; return; }
+  if (!d.ok) { $("botsSite").innerHTML = '<div class="empty">' + escapeHtml(d.message || d.error || d.code || "دریافت آمار بات‌ها ناموفق بود.") + (d.code ? ' <span dir="ltr" style="opacity:.6">(' + escapeHtml(d.code) + ')</span>' : "") + '<br><span style="opacity:.7;font-size:12px">اگر پیام بالا نامفهوم است، Worker پلاس (plus-worker.js جدید) را دیپلوی کن و SITE_BOT_KEY را روی آن بگذار.</span></div>'; return; }
   botsData = d; renderBots(); loadBotLinks();
 }
 function renderBots() {
@@ -2389,6 +2389,8 @@ function renderBots() {
     botStat(faNum(sum(b => b.users.total)), "کل کاربران همه‌ی بات‌ها") +
     botStat(faNum(sum(b => b.users.today)), "فعال امروز (همه‌ی بات‌ها)") +
     botStat(faNum(sum(b => b.users.blocked)), "مسدودشده‌ی بات", sum(b => b.users.blocked) ? "warn" : "") +
+    botStat(faNum(sum(b => b.users.likes)), "👍 لایک در پیام‌رسان‌ها", "good") +
+    botStat(faNum(sum(b => b.users.dislikes)), "👎 دیس‌لایک در پیام‌رسان‌ها", sum(b => b.users.dislikes) ? "warn" : "") +
     '</div><div class="sx-note">اتصال‌ها بر پایه‌ی پیام‌رسان: ' + ["rubika", "telegram", "bale", "splus"].map(p => (({ rubika: "روبیکا", telegram: "تلگرام", bale: "بله", splus: "سروش پلاس" })[p]) + " " + faNum(bp[p] || 0)).join(" · ") + '</div>' +
     ((d.notConfigured || []).length ? '<div class="sx-note">آدرس Worker این بات‌ها روی سایت تنظیم نشده: ' + escapeHtml(d.notConfigured.join("، ")) + '</div>' : "");
   $("botsCards").innerHTML = (d.bots || []).map(botCardHtml).join("") || '<div class="pv-card"><div class="empty" style="padding:22px 0">هیچ باتی روی سایت تنظیم نشده.</div></div>';
@@ -2414,6 +2416,7 @@ function botCardHtml(b) {
     botStat(faNum(u.newToday), "کاربر جدید امروز") + botStat(faNum(u.new7), "کاربر جدید ۷ روز") + botStat(faNum(u.groups), "گروه (فعال امروز: " + faNum(u.groupsToday) + ")") +
     botStat(faNum(u.linked), "وصل به سوورنو") + botStat(faNum(u.blocked), "مسدود", u.blocked ? "warn" : "") + botStat(faNum(u.reminders), "یادآور فعال") +
     botStat(faNum(t.images), "تصویر ساخته‌شده‌ی امروز") + botStat(faNum(t.edits), "ویرایش تصویر امروز") + botStat(faNum(t.textUsers), "کاربر با پیام امروز") +
+    botStat(faNum(u.likes), "👍 لایک", "good") + botStat(faNum(u.dislikes), "👎 دیس‌لایک", u.dislikes ? "warn" : "") +
     '</div><div class="sx-note">اشتراک کاربران وصل‌شده: ' + escapeHtml(planTxt) + ' · سقف هر کاربر مهمان در روز: ' + faNum(lim.user_np) + ' نورون، ' + faNum(lim.user_gen) + ' تصویر، ' + faNum(lim.user_edit) + ' ویرایش' + (u.paused && u.pausedMsg ? ' · پیام خاموشی: ' + escapeHtml(u.pausedMsg) : "") + '</div>' +
     '<div class="sx-h" style="margin:10px 0 6px;font-size:14px">پرمصرف‌ترین کاربران امروز</div>' + top + '</div>';
 }

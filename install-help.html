@@ -6,16 +6,31 @@
     <meta charset="UTF-8">
     <meta name="viewport" content="width=device-width, initial-scale=1.0">
     <meta name="theme-color" content="#060a14">
-    <meta name="description" content="اگر هنگام نصب اپ Suvreno پیام Google Play Protect دیدید: دلیلش چیست، آیا خطرناک است و چطور اپ را نصب کنید.">
+    <meta name="description" content="اگر هنگام نصب اپ Suvreno پیام Google Play Protect (اندروید) یا Windows protected your PC / SmartScreen (ویندوز) دیدید: دلیلش چیست، آیا خطرناک است و چطور نصب کنید.">
     <meta name="robots" content="index, follow">
     <link rel="canonical" href="https://suvreno.ir/install-help.html">
-    <title>راهنمای نصب اپ اندروید و پیام Play Protect — Suvreno</title>
+    <title>راهنمای نصب اپ اندروید و ویندوز و پیام‌های Play Protect و SmartScreen — Suvreno</title>
     <link rel="preconnect" href="https://fonts.googleapis.com">
     <link rel="preconnect" href="https://fonts.gstatic.com" crossorigin>
     <link href="https://fonts.googleapis.com/css2?family=Vazirmatn:wght@400;500;600;700;800;900&display=swap" rel="stylesheet" media="print" onload="this.media='all'">
     <noscript><link href="https://fonts.googleapis.com/css2?family=Vazirmatn:wght@400;500;600;700;800;900&display=swap" rel="stylesheet"></noscript>
     <link rel="stylesheet" href="style.css?v=8">
     <link rel="stylesheet" href="pages.css?v=3">
+    <style>
+        .doc-card h2[id], .plat-jump{scroll-margin-top:90px}
+        .plat-nav{display:flex;flex-wrap:wrap;gap:10px;margin:0 0 20px}
+        .plat-nav a{padding:8px 16px;border-radius:999px;border:1px solid rgba(127,140,170,.45);font-weight:800;font-size:.92rem}
+        .ss-demo{display:grid;gap:10px;margin:14px 0 4px;direction:ltr}
+        .ss-win{border-radius:10px;background:#1f5fbf;color:#fff;padding:14px 16px;font-family:"Segoe UI",system-ui,sans-serif;font-size:.84rem;line-height:1.55;box-shadow:0 6px 20px rgba(0,0,0,.25)}
+        .ss-win b{display:block;font-size:1rem;font-weight:600;margin-bottom:6px}
+        .ss-hl{outline:2px solid #ffd84d;outline-offset:3px;border-radius:4px}
+        .ss-link{display:inline-block;margin-top:8px;text-decoration:underline;font-weight:600}
+        .ss-btns{display:flex;gap:8px;justify-content:flex-end;margin-top:12px}
+        .ss-btns span{padding:6px 14px;border:1px solid rgba(255,255,255,.7);border-radius:3px;font-weight:600}
+        .ss-step{display:inline-grid;place-items:center;width:22px;height:22px;border-radius:50%;background:#ffd84d;color:#1a1a1a;font-weight:800;font-size:.78rem;margin-inline-end:8px;vertical-align:middle}
+        .ss-arrow{text-align:center;opacity:.6;font-size:1.2rem;line-height:1}
+        .ss-cap{margin:6px 0 14px;font-size:.8rem;opacity:.7;text-align:center}
+    </style>
     <link rel="icon" href="/favicon.ico" sizes="any">
     <link rel="icon" type="image/png" sizes="48x48" href="/favicon-48x48.png">
     <link rel="icon" type="image/png" sizes="96x96" href="/favicon-96x96.png">
@@ -26,10 +41,10 @@
 <body>
 
     <!-- Suvreno App Download Banner -->
-    <a class="app-banner" href="download.html" aria-label="دانلود اپ اندروید Suvreno">
+    <a class="app-banner" href="download.html" aria-label="دانلود اپ Suvreno برای اندروید و ویندوز">
         <span class="app-banner-icon" aria-hidden="true">📲</span>
         <span class="app-banner-text">
-            اپ <strong>Suvreno</strong> برای اندروید آماده است<span class="app-banner-long"> — با امکانات بیشتر و تجربه‌ای سریع‌تر</span>
+            اپ <strong>Suvreno</strong> برای اندروید و ویندوز آماده است<span class="app-banner-long"> — با امکانات بیشتر و تجربه‌ای سریع‌تر</span>
         </span>
         <span class="app-banner-btn">دانلود رایگان</span>
     </a>
@@ -51,8 +66,13 @@
     <main class="page-main">
         <div class="container">
             <div class="doc-narrow">
-                <h1 class="page-title">راهنمای نصب اپ اندروید</h1>
-                <p class="page-lead">هنگام نصب اپ Suvreno ممکن است گوگل پیامی مثل «App blocked to protect your device» نشان دهد. این صفحه توضیح می‌دهد چرا، آیا جای نگرانی هست و چطور اپ را نصب کنید.</p>
+                <h1 class="page-title">راهنمای نصب اپ (اندروید و ویندوز)</h1>
+                <p class="page-lead">هنگام نصب اپ Suvreno ممکن است در اندروید گوگل پیامی مثل «App blocked to protect your device» و در ویندوز پیامی مثل «Windows protected your PC» نشان دهد. این صفحه توضیح می‌دهد چرا، آیا جای نگرانی هست و چطور اپ را نصب کنید.</p>
+
+                <div class="plat-nav" aria-label="پرش به بخش">
+                    <a href="#android">📱 راهنمای اندروید</a>
+                    <a href="#windows">🖥️ راهنمای ویندوز</a>
+                </div>
 
                 <div class="doc-card">
 
@@ -60,7 +80,7 @@
                         <p><b>خلاصه:</b> این پیام یعنی اپ از <b>پلی‌استور</b> نصب نمی‌شود و قابلیت‌هایی دارد که مجوزهای حساس می‌خواهند. به معنی «ویروسی بودن» نیست؛ فقط اپ را «تأییدنشده توسط گوگل» نشان می‌دهد. اگر اپ را از سایت رسمی <span class="ltr-text">suvreno.ir</span> یا فروشگاه‌های مایکت و بازار گرفته‌اید، می‌توانید طبق مراحل زیر نصب کنید.</p>
                     </div>
 
-                    <h2>۱) چرا این پیام می‌آید؟</h2>
+                    <h2 id="android">اندروید — ۱) چرا این پیام می‌آید؟</h2>
                     <ul>
                         <li><b>نصب از بیرون پلی‌استور:</b> Play Protect برای اپ‌هایی که از پلی‌استور نیامده‌اند و مجوزهای حساس دارند محتاط‌تر است. این رفتار برای همه‌ی اپ‌های مشابه هم هست.</li>
                         <li><b>مجوزهای قابلیت «کنترل گوشی»:</b> Suvreno می‌تواند دستورهای شما را اجرا کند؛ مثلاً تماس، پیامک، آلارم، یادآور، تقویم و مخاطبین. برای همین این مجوزها در اپ تعریف شده‌اند: تماس، ارسال پیامک، مخاطبین، تقویم، میکروفن (برای گفتگوی صوتی)، آلارم و اعلان.</li>
@@ -69,7 +89,7 @@
                     </ul>
                     <p>توجه: این‌ها توضیح دلیل‌های محتمل است. گوگل دلیل دقیق هر هشدار را به ما اعلام نمی‌کند.</p>
 
-                    <h2>۲) آیا Suvreno از اطلاعات یا گوشی من سوءاستفاده می‌کند؟</h2>
+                    <h2>اندروید — ۲) آیا Suvreno از اطلاعات یا گوشی من سوءاستفاده می‌کند؟</h2>
                     <ul>
                         <li>هیچ‌کدام از مجوزها بدون <b>اجازه‌ی خود شما</b> فعال نمی‌شوند. اندروید موقع نیاز، جداگانه می‌پرسد و می‌توانید هر مجوز را رد کنید یا بعداً از تنظیمات بردارید. اپ بدون مجوز هم گفتگوی متنی را انجام می‌دهد.</li>
                         <li>اپ فقط وقتی از این مجوزها استفاده می‌کند که شما دستوری بدهید؛ مثلاً «به علی زنگ بزن» یا «آلارم ۷ بذار».</li>
@@ -79,7 +99,7 @@
                         <li>اطلاعات بیشتر درباره‌ی داده‌ها: <a href="privacy.html">حریم خصوصی</a>.</li>
                     </ul>
 
-                    <h2>۳) چطور اپ را نصب کنیم؟</h2>
+                    <h2>اندروید — ۳) چطور اپ را نصب کنیم؟</h2>
                     <p><b>اول:</b> اپ را فقط از <span class="ltr-text">suvreno.ir</span> یا فروشگاه مایکت یا بازار بگیرید. فایل APK که از جای دیگری گرفته‌اید را نصب نکنید.</p>
                     <p><b>اگر پیام دکمه‌ی «Install anyway» (به‌هرحال نصب کن) دارد:</b> «More details» را بزنید و بعد «Install anyway».</p>
                     <p><b>اگر پیام فقط دکمه‌ی OK دارد (مثل «App blocked to protect your device»):</b> باید اسکن Play Protect را موقتاً خاموش کنید:</p>
@@ -93,14 +113,14 @@
                         <li><b>خیلی مهم:</b> بعد از نصب، همین مسیر را بروید و <b>Scan apps with Play Protect</b> را دوباره <b>روشن</b> کنید تا گوشی‌تان مثل قبل محافظت شود.</li>
                     </ol>
 
-                    <h2>۴) برگرداندن گوشی به حالت اولیه</h2>
+                    <h2>اندروید — ۴) برگرداندن گوشی به حالت اولیه</h2>
                     <ul>
-                        <li>اسکن Play Protect را همان‌طور که در مرحله‌ی ۷ از بخش ۳ گفته شد دوباره روشن کنید. با این کار هیچ تغییر دیگری روی گوشی نمی‌ماند.</li>
+                        <li>اسکن Play Protect را همان‌طور که در مرحله‌ی ۷ از بخش «اندروید — ۳» گفته شد دوباره روشن کنید. با این کار هیچ تغییر دیگری روی گوشی نمی‌ماند.</li>
                         <li>اگر برای نصب «Install unknown apps» (نصب برنامه‌های ناشناس) را برای مرورگر یا فایل‌منیجر روشن کردید: تنظیمات ← برنامه‌ها ← همان برنامه ← <b>Install unknown apps</b> ← خاموش.</li>
                         <li>اگر در گوشی‌های سامسونگ «Auto Blocker» را خاموش کردید: تنظیمات ← امنیت و حریم خصوصی ← Auto Blocker ← دوباره روشن.</li>
                     </ul>
 
-                    <h2>۵) پرسش‌های متداول</h2>
+                    <h2>اندروید — ۵) پرسش‌های متداول</h2>
                     <details><summary>پیام می‌گوید «ممکن است خطر سرقت هویت یا کلاهبرداری مالی» دارد؛ یعنی چه؟</summary>
                     <p>این متن عمومی گوگل است و برای هر اپ بیرون از پلی‌استور که مجوزهای حساس بخواهد نمایش داده می‌شود؛ درباره‌ی Suvreno اختصاصی نیست. شما همیشه می‌توانید مجوزهای اپ را از تنظیمات گوشی ← برنامه‌ها ← Suvreno ← مجوزها ببینید و تغییر دهید.</p></details>
                     <details><summary>اگر مجوزی را نمی‌خواهم چه؟</summary>
@@ -112,8 +132,82 @@
                     <details><summary>چطور اپ را کاملاً حذف کنم؟</summary>
                     <p>مثل هر اپ دیگر: نگه‌داشتن آیکن Suvreno ← حذف (Uninstall). مجوزها هم با حذف اپ پاک می‌شوند.</p></details>
 
-                    <h2>۶) هنوز مشکل دارید؟</h2>
-                    <p>یک عکس از پیامی که می‌بینید و مدل گوشی و نسخه‌ی اندرویدتان را از طریق <a href="https://chat.suvreno.ir/?support=1" class="ltr-text">تیکت پشتیبانی</a> یا ایمیل <a class="ltr-text" href="mailto:suvreno.ir@gmail.com">suvreno.ir@gmail.com</a> بفرستید. صفحه‌ی <a href="contact.html">تماس با ما</a> را هم ببینید.</p>
+                    <h2 id="windows">ویندوز — ۱) چرا پیام «Windows protected your PC» می‌آید؟</h2>
+                    <div class="pp-box" style="margin:0 0 18px">
+                        <p><b>خلاصه:</b> این پیام یعنی ویندوز این برنامه را <b>هنوز نمی‌شناسد</b>؛ به معنی «ویروسی بودن» نیست. اگر برنامه را از سایت رسمی <span class="ltr-text">suvreno.ir</span> گرفته‌اید، طبق مراحل زیر نصب کنید.</p>
+                    </div>
+                    <ul>
+                        <li><b>برنامه امضای دیجیتال ندارد:</b> امضای دیجیتال (گواهی ناشر) برای برنامه‌های ویندوز هزینهٔ سالانهٔ جدا دارد. بدون آن، ویندوز ناشر را «Unknown publisher» (ناشر ناشناس) می‌نویسد.</li>
+                        <li><b>برنامه تازه است و کم‌دانلود:</b> قابلیت SmartScreen ویندوز بر اساس «سابقه و محبوبیت» فایل تصمیم می‌گیرد. هر نصب‌کنندهٔ تازه، حتی کاملاً سالم، تا وقتی دانلودهای کافی نداشته باشد این پیام را می‌گیرد.</li>
+                        <li><b>برای همهٔ برنامه‌های مشابه است:</b> این پیام درباره‌ی Suvreno اختصاصی نیست و برای هر برنامهٔ ناشناخته و بدون امضا نمایش داده می‌شود.</li>
+                    </ul>
+                    <p>توجه: این‌ها توضیح دلیل‌های محتمل است؛ ویندوز دلیل دقیق هر هشدار را به ما اعلام نمی‌کند.</p>
+
+                    <h2>ویندوز — ۲) آیا Suvreno به فایل‌ها یا رایانهٔ من دسترسی دارد؟</h2>
+                    <ul>
+                        <li>ایجنت دسکتاپ فقط داخل <b>یک پوشهٔ کاری که خودتان انتخاب می‌کنید</b> فایل می‌خواند و می‌نویسد. بیرون از آن پوشه به هیچ فایلی دست نمی‌زند.</li>
+                        <li>پوشه‌های حساس مثل ریشهٔ درایو، پوشهٔ اصلی کاربر، پوشه‌های سیستمی، AppData و پوشه‌های کلید (مثل <span class="ltr-text">.ssh</span>) به‌عنوان پوشهٔ کاری پذیرفته نمی‌شوند.</li>
+                        <li><b>حذف</b> (فقط انتقال به سطل زباله)، <b>جایگزین‌کردن</b> یک فایل موجود و <b>باز کردن برنامه</b> همیشه با پنجرهٔ تأیید خودِ ویندوز از شما پرسیده می‌شود. هر لحظه می‌توانید ایجنت را متوقف کنید.</li>
+                        <li>برنامه‌هایی که ایجنت می‌تواند باز کند محدود به یک فهرست ثابت (مثل Notepad، ماشین‌حساب، Chrome، Word و …) است؛ فایل اجرایی و اسکریپت از این راه باز نمی‌شود.</li>
+                        <li>اطلاعات بیشتر درباره‌ی داده‌ها: <a href="privacy.html">حریم خصوصی</a>.</li>
+                    </ul>
+
+                    <h2>ویندوز — ۳) چطور نصب کنیم؟</h2>
+                    <p><b>اول:</b> برنامه را فقط از صفحهٔ <a href="download.html#windows">دانلود (تب ویندوز)</a> در <span class="ltr-text">suvreno.ir</span> بگیرید. فایلی که از جای دیگری گرفته‌اید را اجرا نکنید.</p>
+                    <ol class="steps">
+                        <li>فایل <span class="ltr-text">Suvreno-Setup-….exe</span> را از پوشهٔ <b>Downloads</b> دوبار کلیک کنید.</li>
+                        <li>اگر پنجرهٔ آبی <span class="ltr-text">Windows protected your PC</span> آمد، روی نوشتهٔ کوچکِ <b class="ltr-text">More info</b> (اطلاعات بیشتر) کلیک کنید. <b>دکمهٔ اصلی «Don't run» است؛ از آن نزنید.</b></li>
+                        <li>دکمهٔ <b class="ltr-text">Run anyway</b> (در هر حال اجرا کن) ظاهر می‌شود؛ آن را بزنید.</li>
+                        <li>مراحل نصب را ادامه دهید (Next ← Install) و Suvreno را از دسکتاپ یا منوی استارت باز کنید.</li>
+                    </ol>
+
+                    <div class="ss-demo" aria-hidden="true">
+                        <div class="ss-win">
+                            <b><span class="ss-step">۱</span>Windows protected your PC</b>
+                            <p>Microsoft Defender SmartScreen prevented an unrecognized app from starting. Running this app might put your PC at risk.</p>
+                            <span class="ss-link ss-hl">More info</span>
+                            <div class="ss-btns"><span>Don't run</span></div>
+                        </div>
+                        <div class="ss-arrow">↓</div>
+                        <div class="ss-win">
+                            <b><span class="ss-step">۲</span>Windows protected your PC</b>
+                            <p>App: Suvreno-Setup.exe<br>Publisher: Unknown publisher</p>
+                            <div class="ss-btns"><span class="ss-hl">Run anyway</span><span>Don't run</span></div>
+                        </div>
+                    </div>
+                    <p class="ss-cap">نمونهٔ تقریبی؛ ظاهر دقیق پنجره در نسخه‌های مختلف ویندوز کمی فرق دارد.</p>
+
+                    <p><b>اگر مرورگر موقع دانلود هشدار داد</b> (مثلاً در Edge یا Chrome: «<span class="ltr-text">Suvreno-Setup.exe isn't commonly downloaded</span>»): در فهرست دانلودها روی منوی <b>⋯</b> کنار فایل بزنید، <b class="ltr-text">Keep</b> (نگه‌دار) و اگر پرسید <b class="ltr-text">Keep anyway</b> را انتخاب کنید. بعد فایل را اجرا کنید.</p>
+
+                    <p><b>نسخهٔ قابل‌حمل (Portable) را دوست دارید؟</b> بدون نصب مستقیم اجرا می‌شود. اگر باز هم هشدار داد: روی فایل راست‌کلیک ← <b class="ltr-text">Properties</b> ← پایین پنجره تیک <b class="ltr-text">Unblock</b> را بزنید ← <b class="ltr-text">OK</b>؛ بعد دوباره اجرا کنید.</p>
+
+                    <h2>ویندوز — ۴) اگر گزینهٔ «Run anyway» نبود (Smart App Control)</h2>
+                    <ul>
+                        <li>در بعضی رایانه‌های ویندوز ۱۱ قابلیت <b>Smart App Control</b> (کنترل هوشمند برنامه) روشن است و برنامه‌های بدون امضا را کاملاً مسدود می‌کند، بدون گزینهٔ «Run anyway».</li>
+                        <li><b>ساده‌ترین راه:</b> در این حالت از <a href="https://chat.suvreno.ir/" class="ltr-text">chat.suvreno.ir</a> در مرورگر استفاده کنید؛ همهٔ امکانات گفتگو، تصویر و فایل آنجا هم هست.</li>
+                        <li>اگر مطمئنید و می‌خواهید برنامه را نصب کنید: Windows Security ← <b class="ltr-text">App &amp; browser control</b> ← <b class="ltr-text">Smart App Control settings</b> ← <b class="ltr-text">Off</b>. دقت کنید که در بعضی نسخه‌های ویندوز، بعد از خاموش‌کردن روشن‌کردن دوباره‌اش ممکن نیست یا محدودیت دارد؛ پس اگر دلیل محکمی ندارید خاموشش نکنید.</li>
+                        <li>اگر آنتی‌ویروس دیگری (غیر از Windows Security) فایل را قرنطینه کرد، همین فایل را از آنتی‌ویروس «Restore / Allow» کنید یا استثنا اضافه کنید؛ فقط وقتی مطمئنید فایل را از <span class="ltr-text">suvreno.ir</span> گرفته‌اید.</li>
+                    </ul>
+
+                    <h2>ویندوز — ۵) به‌روزرسانی و حذف</h2>
+                    <ul>
+                        <li><b>به‌روزرسانی:</b> وقتی نسخهٔ جدید منتشر شود، خودِ برنامه پیامی نشان می‌دهد و با دکمهٔ «رفتن به صفحهٔ دانلود» شما را به <a href="download.html#windows">همین صفحهٔ دانلود</a> می‌آورد. فایل تازه را دانلود و اجرا کنید تا روی نسخهٔ قبلی نصب شود. از منوی برنامه یا سینی سیستم هم می‌توانید «بررسی نسخهٔ جدید» را بزنید.</li>
+                        <li><b>حذف:</b> تنظیمات ویندوز ← Apps ← Installed apps ← Suvreno ← Uninstall. نسخهٔ قابل‌حمل را کافی است پاک کنید.</li>
+                        <li>اگر ایجنت پوشه‌ای را به‌عنوان پوشهٔ کاری گرفته بود، آن پوشه و فایل‌هایش با حذف برنامه پاک نمی‌شوند.</li>
+                    </ul>
+
+                    <h2>ویندوز — ۶) پرسش‌های متداول</h2>
+                    <details><summary>پیام می‌گوید «Running this app might put your PC at risk»؛ یعنی چه؟</summary>
+                    <p>این متن عمومی ویندوز است و برای هر برنامهٔ ناشناخته نمایش داده می‌شود؛ درباره‌ی Suvreno اختصاصی نیست و به‌معنی تشخیص ویروس نیست.</p></details>
+                    <details><summary>چرا Suvreno امضای دیجیتال ندارد؟</summary>
+                    <p>گواهی امضای کد هزینهٔ سالانه دارد و ما فعلاً از آن استفاده نکرده‌ایم. وقتی تعداد دانلودها بیشتر شود، ویندوز به‌تدریج برنامه را می‌شناسد و این هشدار کمتر می‌شود. هیچ تضمینی برای زمان آن نداریم.</p></details>
+                    <details><summary>نمی‌خواهم از «Run anyway» استفاده کنم.</summary>
+                    <p>می‌توانید Suvreno را روی مرورگر استفاده کنید: <a href="https://chat.suvreno.ir/" class="ltr-text">chat.suvreno.ir</a>. فقط امکانات مخصوص دسکتاپ (ایجنت روی پوشهٔ کاری، حالت مینی، میان‌بُر سراسری) در نسخهٔ ویندوز است.</p></details>
+                    <details><summary>روی ویندوز ۳۲ بیتی یا ویندوز ۷ کار می‌کند؟</summary>
+                    <p>نه. نسخهٔ ویندوز برای ویندوز ۱۰ و ۱۱ (۶۴ بیتی) ساخته شده است.</p></details>
+
+                    <h2>هنوز مشکل دارید؟</h2>
+                    <p>یک عکس از پیامی که می‌بینید و مدل گوشی و نسخه‌ی اندروید (یا نسخه‌ی ویندوز) شما را از طریق <a href="https://chat.suvreno.ir/?support=1" class="ltr-text">تیکت پشتیبانی</a> یا ایمیل <a class="ltr-text" href="mailto:suvreno.ir@gmail.com">suvreno.ir@gmail.com</a> بفرستید. صفحه‌ی <a href="contact.html">تماس با ما</a> را هم ببینید.</p>
 
                     <p><a class="contact-email" href="download.html" style="font-size:16px">بازگشت به صفحه‌ی دانلود</a></p>
                 </div>

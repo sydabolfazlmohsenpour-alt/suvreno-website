@@ -1,0 +1,12 @@
+{
+  "version": "1.2.0",
+  "notes": [
+    "اطلاع‌رسانی خودکار نسخه‌ی جدید داخل برنامه",
+    "منوی «بررسی نسخه‌ی جدید» در منوی برنامه و سینی سیستم"
+  ],
+  "setupUrl": "https://github.com/sydabolfazlmohsenpour-alt/suvreno-desktop/releases/download/v1.2.0/Suvreno-Setup-1.2.0.exe",
+  "setupSize": 74728937,
+  "portableUrl": "https://github.com/sydabolfazlmohsenpour-alt/suvreno-desktop/releases/download/v1.2.0/Suvreno-Portable-1.2.0.exe",
+  "portableSize": 74486699,
+  "pageUrl": "https://suvreno.ir/download.html#windows"
+}

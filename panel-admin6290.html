@@ -418,6 +418,8 @@ tbody tr:last-child td{border-bottom:0}
       <button type="button" id="tabAgent"><svg class="ni" viewBox="0 0 24 24" aria-hidden="true"><rect x="5" y="8" width="14" height="11" rx="3"/><path d="M12 4v4"/><circle cx="12" cy="3.5" r="1"/><circle cx="9.5" cy="13" r="1"/><circle cx="14.5" cy="13" r="1"/><path d="M9.5 16.5h5"/></svg><span class="nl">ایجنت</span></button>
       <button type="button" id="tabCtl"><svg class="ni" viewBox="0 0 24 24" aria-hidden="true"><path d="M12 3l8 3v6c0 4.5-3.2 7.8-8 9-4.8-1.2-8-4.5-8-9V6z"/><path d="M9 12l2 2 4-4"/></svg><span class="nl">کنترل</span></button>
       <button type="button" id="tabBots"><svg class="ni" viewBox="0 0 24 24" aria-hidden="true"><rect x="4" y="7" width="16" height="12" rx="3"/><path d="M12 3v4"/><circle cx="9" cy="13" r="1.2"/><circle cx="15" cy="13" r="1.2"/><path d="M2 12v3"/><path d="M22 12v3"/></svg><span class="nl">بات‌ها</span></button>
+      <button type="button" id="tabUx"><svg class="ni" viewBox="0 0 24 24" aria-hidden="true"><path d="M4 20V10"/><path d="M10 20V4"/><path d="M16 20v-7"/><path d="M22 20H2"/></svg><span class="nl">رفتار</span></button>
+      <button type="button" id="tabSurvey"><svg class="ni" viewBox="0 0 24 24" aria-hidden="true"><path d="M12 3l2.6 5.6 6.1.7-4.5 4.2 1.2 6L12 16.5 6.6 19.5l1.2-6L3.3 9.3l6.1-.7z"/></svg><span class="nl">نظرسنجی</span></button>
     </nav>
     <div class="rail-foot">
       <div class="live-pill"><span class="live-dot"></span><span id="lastUpdate">در حال اتصال…</span></div>
@@ -708,6 +710,24 @@ tbody tr:last-child td{border-bottom:0}
     <div id="agUsers"><div class="loading">در حال بارگذاری...</div></div>
   </div>
 
+  <div id="viewUx" style="display:none">
+    <div class="pv-card">
+      <div class="tools-row"><b>📊 رفتار کاربران</b>
+        <select id="uxDays" class="tk-mini"><option value="7">۷ روز</option><option value="14" selected>۱۴ روز</option><option value="30">۳۰ روز</option><option value="90">۹۰ روز</option></select>
+        <button type="button" class="tk-mini" id="uxReload">🔄 بروزرسانی</button></div>
+      <div class="sx-note">متنِ گفتگوها ذخیره نمی‌شود؛ فقط شمارنده‌ی استفاده از هر قابلیت و یک «برچسب موضوعِ کلی» برای هر پیام ثبت می‌شود. موضوع‌ها با کلمه‌های کلیدی حدس زده می‌شوند، پس تخمینی‌اند. آمار از روزی شروع می‌شود که نسخه‌ی جدید ورکرها دیپلوی شده.</div>
+      <div id="uxBody"><div class="empty">برای دیدن آمار، «بروزرسانی» را بزن.</div></div>
+    </div>
+  </div>
+  <div id="viewSurvey" style="display:none">
+    <div class="pv-card">
+      <div class="tools-row"><b>⭐ نظرسنجی خریداران اشتراک</b>
+        <button type="button" class="tk-mini" id="svReload">🔄 بروزرسانی</button></div>
+      <div class="sx-note">۲۴ ساعت بعد از هر خرید، یک تیکت نظرسنجی (امتیاز ۱ تا ۵ + نقاط قوت + نقاط ضعف) در «تیکت‌های من» کاربر ظاهر می‌شود و پاسخش اینجا می‌آید. برای هر کاربر حداکثر هر ۱۴ روز یک‌بار ارسال می‌شود و خریدهای قبل از فعال‌شدن این قابلیت نظرسنجی ندارند.</div>
+      <div class="tools-row" style="margin-top:6px"><input id="svEmail" type="email" dir="ltr" placeholder="ایمیل کاربر برای ارسال دستی/تست" style="flex:1;min-width:180px;padding:9px 12px;border-radius:12px;border:1px solid var(--line);background:var(--glass);color:var(--txt)"><button type="button" class="tk-mini" id="svSend">📨 ارسال نظرسنجی الان</button></div>
+      <div id="svBody"><div class="empty">برای دیدن نظرها، «بروزرسانی» را بزن.</div></div>
+    </div>
+  </div>
   <div id="viewBots" style="display:none">
     <div class="pv-card">
       <div class="tools-row"><b>🤖 بات‌های پیام‌رسان</b>
@@ -870,7 +890,9 @@ async function api(url, body, timeout) {
   finally { clearTimeout(t); }
 }
 const callMain = b => api(WORKER_URL, b);
-const callPlus = (b, ms) => api(PLUS_URL, b, ms);
+const adminDeviceId = () => { try { let v = localStorage.getItem("SUVRENO_ADMIN_DEV"); if (!v || v.length < 16) { const a = new Uint8Array(12); crypto.getRandomValues(a); v = Array.from(a, x => x.toString(16).padStart(2, "0")).join(""); localStorage.setItem("SUVRENO_ADMIN_DEV", v); } return v; } catch { return ""; } };
+const adminDeviceLabel = () => { const u = navigator.userAgent || ""; const os = /Android/i.test(u) ? "Android" : /iPhone|iPad/i.test(u) ? "iOS" : /Windows/i.test(u) ? "Windows" : /Mac/i.test(u) ? "Mac" : /Linux/i.test(u) ? "Linux" : "؟"; const br = /Edg\//.test(u) ? "Edge" : /OPR\//.test(u) ? "Opera" : /Firefox/i.test(u) ? "Firefox" : /Chrome/i.test(u) ? "Chrome" : /Safari/i.test(u) ? "Safari" : "؟"; return os + " · " + br; };
+const callPlus = (b, ms) => api(PLUS_URL, Object.assign({ deviceId: adminDeviceId(), deviceLabel: adminDeviceLabel() }, b), ms);
 const savedKey = () => { try { return sessionStorage.getItem(KEY_STORAGE); } catch { return null; } };
 
 /* ---------- وضعیت اتصال ---------- */
@@ -1404,6 +1426,18 @@ function activityClockHtml(hours) {
   return '<div style="display:flex;gap:2px;align-items:flex-end;margin-top:4px">' + bars + '</div>' +
     '<div style="display:flex;justify-content:space-between;font-size:10px;opacity:.6;margin-top:2px"><span>۰۰</span><span>۰۶</span><span>۱۲</span><span>۱۸</span><span>۲۳</span></div>';
 }
+function uxCardHtml(d) {
+  const u = d.ux, sv = d.surveys || [];
+  let h = "";
+  if (u && (u.features.length || u.topics.length)) {
+    const chips = (arr, fa) => arr.slice(0, 6).map(i => '<span class="learn-chip" style="display:inline-block;margin:3px 4px 3px 0;padding:4px 10px;border-radius:12px;background:var(--glass);border:1px solid var(--line);font-size:12px">' + escapeHtml((fa && fa[i.k]) || i.k) + ' · ' + faNum(i.n) + '</span>').join("");
+    h += '<p class="tk-sec2" style="margin-top:10px">رفتار در ۳۰ روز اخیر · ' + faNum(u.activeDays) + ' روز فعال' + (u.last ? ' · آخرین فعالیت ' + escapeHtml(u.last) : '') + '</p>' +
+      (u.features.length ? '<div>' + chips(u.features, typeof UX_FEATURE_FA !== "undefined" ? UX_FEATURE_FA : null) + '</div>' : '') +
+      (u.topics.length ? '<div style="margin-top:4px">' + chips(u.topics, typeof UX_TOPIC_FA !== "undefined" ? UX_TOPIC_FA : null) + '</div>' : '');
+  } else h += '<p class="tk-sec2" style="margin-top:10px">رفتار: هنوز داده‌ای برای این کاربر ثبت نشده.</p>';
+  if (sv.length) h += '<p class="tk-sec2" style="margin-top:10px">نظرسنجی اشتراک</p>' + sv.map(x => '<div class="mini-item">' + escapeHtml(x.plan) + ' — ' + (x.status === "answered" ? '<b style="color:#ffc857">' + "★".repeat(x.rating) + "☆".repeat(5 - x.rating) + '</b>' + (x.pros ? '<br>👍 ' + escapeHtml(x.pros) : '') + (x.cons ? '<br>👎 ' + escapeHtml(x.cons) : '') : 'ارسال شد؛ هنوز جواب نداده') + '</div>').join("");
+  return h;
+}
 function agentCardHtml(a) {
   if (!a) return "";
   const line = (title, v) => '<div class="stat-card" style="min-width:0"><b>' + title + ' ' + faNum(v.used || 0) + ' از ' + faNum(v.cap || 0) + '</b><span>سهمیه‌ی ' + (v.period === "week" ? "این هفته" : "امروز") + ' · ' + faNum(v.tasks || 0) + ' کار کل، ' + faNum(v.steps || 0) + ' مرحله، سقف ' + faNum(v.maxSteps || 0) + ' مرحله در هر کار' + (v.credits ? '، ' + faNum(v.credits) + ' اعتبار مصرف' : '') + (v.lastAt ? ' · آخرین ' + escapeHtml(fmtAgo(v.lastAt)) : '') + '</span>' + agBar(v.used || 0, v.cap || 0) + '</div>';
@@ -1426,7 +1460,7 @@ function liveCardHtml(d) {
     chip("🎫", "تیکت (باز/کل)", faNum(a.ticketsOpen || 0) + " / " + faNum(a.tickets || 0)) +
     chip("💬", "پیام امروز", faNum(a.messagesToday || 0)) +
     chip("🍬", "سهمیه‌ی چشیدن", tasteTxt) +
-    '</div>' + agentCardHtml(d.agent) + '<div>پلن فعلی: ' + planChip + (p.expiresAt ? ' <span class="sub-time">تا ' + fmtDay(p.expiresAt) + '</span>' : '') + '</div>' +
+    '</div>' + agentCardHtml(d.agent) + uxCardHtml(d) + '<div>پلن فعلی: ' + planChip + (p.expiresAt ? ' <span class="sub-time">تا ' + fmtDay(p.expiresAt) + '</span>' : '') + '</div>' +
     (a.loginSamples ? '<p class="tk-sec2" style="margin-top:10px">ساعت‌های ورود (به‌وقت تهران، ' + faNum(a.loginSamples) + ' ورود آخر)</p>' + activityClockHtml(a.loginHoursTehran) : '');
 }
 function openUser(u) {
@@ -2362,6 +2396,69 @@ document.addEventListener("click", async e => {
     else toast("انجام نشد", (r && r.message) || "دوباره امتحان کن.", { kind: "bad", icon: "⚠️" });
   }
 });
+/* ---- v2.5: رفتار کاربران + نظرسنجی اشتراک ---- */
+const UX_FEATURE_FA = { chat: "چت", search: "جست‌وجوی وب", image: "ساخت/ویرایش تصویر", files: "تحلیل فایل", voice_in: "ورودی صوتی", voice_out: "خوانش صوتی", phone: "دستور گوشی" };
+const UX_TOPIC_FA = { code: "برنامه‌نویسی", study: "درس و تحصیل", translate: "ترجمه", writing: "نوشتن و ویرایش", business: "کسب‌وکار و بازاریابی", finance: "مالی و بازار", health: "سلامت و ورزش", psychology: "روابط و روان", law: "حقوقی", cooking: "آشپزی", travel: "سفر", tech: "فناوری و گوشی", fun: "سرگرمی", other: "سایر" };
+function uxBars(items, fa) {
+  if (!items || !items.length) return '<div class="empty">هنوز داده‌ای نیست.</div>';
+  const max = Math.max(1, ...items.map(i => i.n));
+  return items.map(i => '<div style="display:flex;align-items:center;gap:8px;margin:6px 0"><span style="width:118px;font-size:12.5px;flex:none">' + escapeHtml(fa[i.k] || i.k) + '</span><div style="flex:1;background:rgba(255,255,255,.06);border-radius:8px;height:14px;overflow:hidden"><div style="width:' + Math.max(2, i.n / max * 100) + '%;height:100%;background:var(--grad)"></div></div><span style="min-width:96px;text-align:left;font-size:12px;color:var(--mut2)">' + faNum(i.n) + ' · ' + faNum(i.u) + ' کاربر</span></div>').join("");
+}
+function renderUx(d) {
+  const r = d.retention || {};
+  const grid = '<div style="display:grid;grid-template-columns:repeat(auto-fit,minmax(130px,1fr));gap:10px;margin-bottom:14px">' +
+    botStat(faNum(r.active7), "فعال در ۷ روز اخیر") + botStat(faNum(r.prev7), "فعال در ۷ روزِ قبلش") + botStat(faNum(r.returned), "برگشته‌ها (هر دو هفته فعال)") + '</div>';
+  const dl = d.daily || [], mx = Math.max(1, ...dl.map(x => x.u));
+  const daily = dl.length ? '<div style="display:flex;gap:4px;align-items:flex-end;height:90px;margin-top:8px">' + dl.map(x => '<div title="' + x.day + ' — ' + faNum(x.u) + ' کاربر، ' + faNum(x.n) + ' استفاده" style="flex:1;display:flex;flex-direction:column;justify-content:flex-end;align-items:center;height:90px"><div style="width:70%;height:' + Math.max(2, x.u / mx * 78) + 'px;background:#2de2c8;border-radius:4px"></div><span style="font-size:9px;color:var(--mut)">' + faNum(x.day.slice(8)) + '</span></div>').join("") + '</div>' : '<div class="empty">هنوز داده‌ای نیست.</div>';
+  const hm = Math.max(1, ...(d.hourly || [0]));
+  const hours = '<div style="display:flex;gap:2px;align-items:flex-end;height:80px;margin-top:8px;direction:ltr">' + (d.hourly || []).map((n, h) => '<div title="ساعت ' + h + ' — ' + faNum(n) + '" style="flex:1;display:flex;flex-direction:column;justify-content:flex-end;align-items:center;height:80px"><div style="width:80%;height:' + Math.max(2, n / hm * 62) + 'px;background:#ffc857;border-radius:3px"></div><span style="font-size:9px;color:var(--mut)">' + h + '</span></div>').join("") + '</div>';
+  const power = botTable(["کاربر", "پلن", "استفاده", "روزِ فعال"], (d.power || []).map(p => [escapeHtml(p.email), escapeHtml(p.plan || "رایگان"), faNum(p.n), faNum(p.days)]));
+  const churn = (d.churn || []).length ? botTable(["مشترکِ بی‌فعالیت", "پلن", "آخرین فعالیت", "پایان اشتراک"], d.churn.map(c => [escapeHtml(c.email), escapeHtml(c.plan), c.last ? escapeHtml(c.last) : "ثبت نشده", c.exp ? fmtAgo(c.exp) : "—"])) : '<div class="empty">مشترکِ بی‌فعالیتی دیده نشد.</div>';
+  $("uxBody").innerHTML = '<div class="sx-note">بازه: ' + faNum(d.days) + ' روز' + (d.since ? ' · اولین داده‌ی ثبت‌شده: ' + escapeHtml(d.since) : '') + '</div>' + grid +
+    '<div class="pv-card"><b>👥 کاربران فعال هر روز</b>' + daily + '</div>' +
+    '<div class="pv-card"><b>🧩 قابلیت‌ها (همه‌ی کاربران)</b>' + uxBars(d.features, UX_FEATURE_FA) + '<div style="height:10px"></div><b>💎 قابلیت‌ها (فقط مشترک‌های فعال)</b>' + uxBars(d.paidFeatures, UX_FEATURE_FA) + '</div>' +
+    '<div class="pv-card"><b>💬 موضوعِ کلیِ گفتگوها (همه)</b>' + uxBars(d.topics, UX_TOPIC_FA) + '<div style="height:10px"></div><b>💎 موضوع‌ها (فقط مشترک‌های فعال)</b>' + uxBars(d.paidTopics, UX_TOPIC_FA) + '</div>' +
+    '<div class="pv-card"><b>🕒 ساعت‌های شلوغی (به‌وقت تهران)</b>' + hours + '</div>' +
+    '<div class="pv-card"><b>🔥 پرمصرف‌ترین کاربران</b>' + power + '</div>' +
+    '<div class="pv-card"><b>⚠️ مشترک‌های فعال که ۷ روز است استفاده نکرده‌اند (خطر ریزش)</b>' + churn + '</div>';
+}
+async function loadUx() {
+  const key = savedKey(); if (!key) return;
+  $("uxBody").innerHTML = '<div class="loading">در حال بارگذاری...</div>';
+  const d = await callPlus({ mode: "admin-ux", adminKey: key, days: Number($("uxDays").value) || 14 }, 40000);
+  if (!d || !d.ok) { $("uxBody").innerHTML = '<div class="empty">' + escapeHtml((d && d.message) || "دریافت آمار ناموفق بود.") + '</div>'; return; }
+  renderUx(d);
+}
+const svStarsTxt = r => { let s = ""; for (let i = 1; i <= 5; i++) s += i <= r ? "★" : "☆"; return s; };
+function renderSurveys(d) {
+  const plans = (d.plans || []).map(p => botStat((p.avg == null ? "—" : faNum(p.avg)) + " ★", escapeHtml(p.planName) + " · " + faNum(p.answered) + " از " + faNum(p.sent) + " پاسخ")).join("");
+  const dist = [5, 4, 3, 2, 1].map(n => { const c = ((d.dist || []).find(x => x.rating === n) || {}).c || 0; return '<span style="margin-inline-end:12px;white-space:nowrap">' + n + '★ ' + faNum(c) + '</span>'; }).join("");
+  const items = d.items || [];
+  const list = items.length ? items.map(i => '<div class="pv-card" style="margin:8px 0"><div style="display:flex;gap:8px;flex-wrap:wrap;align-items:center;font-size:12.5px;color:var(--mut2)"><b style="color:var(--txt)">' + escapeHtml(i.email || "—") + '</b><span>' + escapeHtml(i.planName) + '</span><span>' + (i.status === "answered" ? fmtAgo(i.answeredAt) : "ارسال شد؛ منتظر پاسخ") + '</span></div>' +
+    (i.status === "answered" ? '<div style="font-size:22px;color:#ffc857;letter-spacing:3px;margin:4px 0">' + svStarsTxt(i.rating || 0) + '</div>' + (i.pros ? '<div style="margin-top:6px">👍 ' + escapeHtml(i.pros) + '</div>' : '') + (i.cons ? '<div style="margin-top:6px">👎 ' + escapeHtml(i.cons) + '</div>' : '') : '') + '</div>').join("") : '<div class="empty">هنوز نظرسنجی‌ای ارسال نشده. ۲۴ ساعت بعد از اولین خرید جدید خودکار می‌رود؛ برای تست ایمیل بنویس و «ارسال نظرسنجی الان» را بزن.</div>';
+  $("svBody").innerHTML = '<div style="display:grid;grid-template-columns:repeat(auto-fit,minmax(150px,1fr));gap:10px;margin:12px 0">' + (plans || botStat("—", "هنوز پاسخی نیست")) + botStat(faNum(d.pending), "در صفِ ارسال") + '</div>' + '<div class="sx-note">توزیع امتیازها: ' + dist + '</div>' + list;
+}
+async function loadSurveys() {
+  const key = savedKey(); if (!key) return;
+  $("svBody").innerHTML = '<div class="loading">در حال بارگذاری...</div>';
+  const d = await callPlus({ mode: "admin-surveys", adminKey: key }, 30000);
+  if (!d || !d.ok) { $("svBody").innerHTML = '<div class="empty">' + escapeHtml((d && d.message) || "دریافت نظرسنجی‌ها ناموفق بود.") + '</div>'; return; }
+  renderSurveys(d);
+}
+document.addEventListener("click", async e => {
+  const b = e.target.closest ? e.target.closest("button") : null; if (!b) return;
+  if (b.id === "uxReload") { loadUx(); return; }
+  if (b.id === "svReload") { loadSurveys(); return; }
+  if (b.id === "svSend") {
+    const key = savedKey(); if (!key) return;
+    const email = ($("svEmail").value || "").trim();
+    if (!email) { toast("ایمیل خالی است", "ایمیل کاربر را بنویس.", { kind: "bad", icon: "⚠️" }); return; }
+    b.disabled = true; const r = await callPlus({ mode: "admin-survey-send", adminKey: key, email }); b.disabled = false;
+    if (r && r.ok) { toast(r.result === "sent" ? "نظرسنجی فرستاده شد" : "ارسال نشد", r.result === "sent" ? email : "این کاربر به‌تازگی نظرسنجی داشته.", { icon: r.result === "sent" ? "📨" : "ℹ️", ms: 4000 }); loadSurveys(); }
+    else toast("انجام نشد", (r && r.message) || "دوباره امتحان کن.", { kind: "bad", icon: "⚠️" });
+  }
+});
+
 /* ---- بات‌ها (روبیکا / تلگرام / بله / سروش پلاس) ---- */
 let botsData = null, botsUsersCur = [], botsUsersPlat = "";
 const botPlanFa = p => ({ free: "رایگان", pack: "اعتبار", start: "Start", plus: "Plus" }[p || "free"] || String(p));
@@ -2480,7 +2577,7 @@ document.addEventListener("click", async e => {
 });
 document.addEventListener("keydown", e => { if (e.key === "Enter" && e.target && e.target.id === "botsQ") loadBotUsers(); });
 
-const TAB_HOOKS = { agent: () => loadAgentUsage(), ctl: () => loadCtl(), free: () => loadFree(), err: () => { loadErr(); loadProv(); }, stats: () => loadStats(), disc: () => { loadDisc(); if (!$("dsPresets").children.length) { $("dsPresets").innerHTML = DS_PRESETS.map((p, i) => '<button type="button" class="tk-mini" data-pre="' + i + '">' + p[0] + '</button>').join(""); dsFill(null); } }, voice: () => loadFbv(), bots: () => loadBots() };
+const TAB_HOOKS = { agent: () => loadAgentUsage(), ctl: () => loadCtl(), free: () => loadFree(), err: () => { loadErr(); loadProv(); }, stats: () => loadStats(), disc: () => { loadDisc(); if (!$("dsPresets").children.length) { $("dsPresets").innerHTML = DS_PRESETS.map((p, i) => '<button type="button" class="tk-mini" data-pre="' + i + '">' + p[0] + '</button>').join(""); dsFill(null); } }, voice: () => loadFbv(), bots: () => loadBots(), ux: () => loadUx(), survey: () => loadSurveys() };
 document.addEventListener("click", async e => {
   const t = e.target.closest ? e.target.closest("button") : null; if (!t) return;
   const key = savedKey();
@@ -2523,9 +2620,11 @@ const SECTION_META = {
   voice: ["نظرات و مقایسه", "نظرات کاربران و گالری مقایسه‌ی کیفیت Free و Plus"],
   agent: ["ایجنت", "مصرف سهمیه‌ی ایجنت گوشی و کامپیوتر برای هر کاربر"],
   ctl: ["کنترل", "هزینه و سود هر کاربر، موجودی AvalAI، سوءاستفاده، پرداخت و نگهداشت"],
-  bots: ["بات‌ها", "روبیکا، تلگرام، بله و سروش پلاس: کاربران، نورون مصرف‌شده، مسدودسازی و خاموش/روشن"]
+  bots: ["بات‌ها", "روبیکا، تلگرام، بله و سروش پلاس: کاربران، نورون مصرف‌شده، مسدودسازی و خاموش/روشن"],
+  ux: ["رفتار کاربران", "قابلیت‌های پراستفاده، موضوع گفتگوها، ساعت‌های شلوغی و خطر ریزش"],
+  survey: ["نظرسنجی اشتراک", "نظر خریدارها درباره‌ی پلن‌ها: امتیاز، نقاط قوت و ضعف"]
 };
-const TABMAP = { home: ["tabHome", "viewHome"], feedback: ["tabFeedback", "viewFeedback"], orders: ["tabOrders", "viewOrders"], tickets: ["tabTickets", "viewTickets"], subs: ["tabSubs", "viewSubs"], users: ["tabUsers", "viewUsers"], learn: ["tabLearn", "viewLearn"], free: ["tabFree", "viewFree"], err: ["tabErr", "viewErr"], stats: ["tabStats", "viewStats"], disc: ["tabDisc", "viewDisc"], voice: ["tabVoice", "viewVoice"], agent: ["tabAgent", "viewAgent"], ctl: ["tabCtl", "viewCtl"], bots: ["tabBots", "viewBots"] };
+const TABMAP = { home: ["tabHome", "viewHome"], feedback: ["tabFeedback", "viewFeedback"], orders: ["tabOrders", "viewOrders"], tickets: ["tabTickets", "viewTickets"], subs: ["tabSubs", "viewSubs"], users: ["tabUsers", "viewUsers"], learn: ["tabLearn", "viewLearn"], free: ["tabFree", "viewFree"], err: ["tabErr", "viewErr"], stats: ["tabStats", "viewStats"], disc: ["tabDisc", "viewDisc"], voice: ["tabVoice", "viewVoice"], agent: ["tabAgent", "viewAgent"], ctl: ["tabCtl", "viewCtl"], bots: ["tabBots", "viewBots"], ux: ["tabUx", "viewUx"], survey: ["tabSurvey", "viewSurvey"] };
 function setTab(name) {
   if (!TABMAP[name]) return;
   Object.keys(TABMAP).forEach(k => {

@@ -1,10 +1,10 @@
 {
-  "versionName": "2.4.5",
-  "versionCode": 131,
+  "versionName": "2.4.7",
+  "versionCode": 132,
   "storeCodes": {
-    "site": 131,
-    "bazaar": 131,
-    "myket": 131
+    "site": 132,
+    "bazaar": 132,
+    "myket": 132
   },
   "notes": [
     "از این نسخه سوورنو بدون فیلترشکن هم باز می‌شود: فایل‌های سایت داخل خودِ اپ آمده‌اند",
